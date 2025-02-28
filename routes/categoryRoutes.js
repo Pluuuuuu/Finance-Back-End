@@ -1,17 +1,11 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const db = require("../db"); // Ensure this points to your SQLite connection file
+const { createCategory, getCategories } = require('../controllers/CategoryController');
 
-// Get all categories
-router.get("/", (req, res) => {
-    db.all("SELECT * FROM categories", [], (err, rows) => {
-        if (err) {
-            console.error(err);
-            res.status(500).json({ error: "Failed to retrieve categories" });
-            return;
-        }
-        res.json(rows);
-    });
-});
+// Route for adding a new category
+router.post('/', createCategory);
+
+// Route for fetching all categories
+router.get('/', getCategories);
 
 module.exports = router;
