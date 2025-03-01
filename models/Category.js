@@ -15,6 +15,7 @@ module.exports = (sequelize, Sequelize) => {
   }, {
     sequelize,
     modelName: 'Category',
+    tableName: 'Categories', // Ensure correct table name
   });
 
   return Category;
