@@ -1,32 +1,33 @@
 const { Model, DataTypes } = require('sequelize');
-const sequelize = require('../config/db').sequelize;
 
-class Expense extends Model {}
+module.exports = (sequelize, Sequelize) => {
+  class Expense extends Model {}
 
-Expense.init({
+  Expense.init({
     date: {
-        type: DataTypes.DATE,
-        allowNull: false,
+      type: DataTypes.DATE,
+      allowNull: false,
     },
     category: {
-        type: DataTypes.STRING,
-        allowNull: false,
+      type: DataTypes.STRING,
+      allowNull: false,
     },
     amount: {
-        type: DataTypes.FLOAT,
-        allowNull: false,
+      type: DataTypes.FLOAT,
+      allowNull: false,
     },
     title: {
-        type: DataTypes.STRING,
-        allowNull: false,
+      type: DataTypes.STRING,
+      allowNull: false,
     },
     message: {
-        type: DataTypes.TEXT,
-        allowNull: true,
+      type: DataTypes.TEXT,
+      allowNull: true,
     },
-}, {
+  }, {
     sequelize,
     modelName: 'Expense',
-});
+  });
 
-module.exports = Expense;
+  return Expense;
+};
