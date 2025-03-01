@@ -27,5 +27,9 @@
     "url": "https://github.com/Pluuuuuu/Finance-Back-End/issues"
   },
   "homepage": "https://github.com/Pluuuuuu/Finance-Back-End#readme",
-  "description": ""
+  "description": "",
+  "devDependencies": {
+    "nodemon": "^3.1.9",
+    "sequelize-cli": "^6.6.2"
+  }
 }
