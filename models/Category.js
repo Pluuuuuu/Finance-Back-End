@@ -15,12 +15,8 @@ module.exports = (sequelize, Sequelize) => {
   }, {
     sequelize,
     modelName: 'Category',
-<<<<<<< HEAD
-});
-=======
     tableName: 'Categories', // Ensure correct table name
   });
->>>>>>> michella
 
 module.exports = Category;
 }
