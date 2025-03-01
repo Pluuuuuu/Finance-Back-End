@@ -6,20 +6,66 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const expenseRoutes = require('./routes/expenseRoutes'); // Import routes
 const categoryRoutes = require('./routes/categoryRoutes'); // Import category routes
+const timeout = require('connect-timeout');
+
 
 dotenv.config();
 
 connectDB(); // Connect to the database
 
 const app = express();
-
+// Middleware
 app.use(express.json());
-app.use(cors());
+//app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:3000', // Allow only the frontend URL
+  methods: ['GET', 'POST'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(timeout('60s')); // Set timeout to 60 seconds
 
 app.use('/api/expenses', expenseRoutes); // Use expense routes
 app.use('/api/categories', categoryRoutes); // Use category routes
+
+
+// Example API Endpoints for the home page
+app.get('/api/summary', (req, res) => {
+  // Your logic to fetch summary data
+  const summary = {
+      totalIncome: 10000, // Example data
+      totalExpenses: 5000, // Example data
+      netProfit: 5000 // Example data
+  };
+  res.status(200).json(summary);
+});
+
+app.get('/api/recent-activities', (req, res) => {
+  // Your logic to fetch recent activities home page
+  const recentActivities = [
+      { id: 1, title: "Salary", amount: 3000, date: "2025-02-01" },
+      { id: 2, title: "Groceries", amount: 150, date: "2025-02-05" }
+  ];
+  res.status(200).json(recentActivities);
+});
+
+app.get('/api/chart-data', (req, res) => {
+  // Your logic to fetch chart data home page 
+  const chartData = {
+      labels: ["January", "February", "March"],
+      data: [3000, 2500, 5000] // Example data
+  };
+  res.status(200).json(chartData);
+});
+
+
+
+
+
+
+
+
 
 // Test Route
 app.get('/test-db', async (req, res) => {
