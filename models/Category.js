@@ -8,14 +8,11 @@ module.exports = (sequelize, Sequelize) => {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    type: {
-      type: DataTypes.ENUM('fixed', 'recurring'),
-      allowNull: false,
-    },
   }, {
     sequelize,
     modelName: 'Category',
     tableName: 'Categories', // Ensure correct table name
+    timestamps: true // Ensure timestamps are handled
   });
 
   return Category;
