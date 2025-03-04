@@ -35,6 +35,19 @@ app.get('/api/summary', (req, res) => {
   res.status(200).json(summary);
 });
 
+//Add an API Endpoint to Fetch Total Expenses
+app.get('/api/total-expenses', async (req, res) => {
+  try {
+    const [result] = await sequelize.query('SELECT SUM(amount) as totalExpenses FROM Expenses');
+    const totalExpenses = result[0].totalExpenses || 0;
+    res.status(200).json({ totalExpenses });
+  } catch (error) {
+    console.error('Error fetching total expenses:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+
 app.get('/api/recent-activities', (req, res) => {
   const recentActivities = [
     { id: 1, title: "Salary", amount: 3000, date: "2025-02-01" },
