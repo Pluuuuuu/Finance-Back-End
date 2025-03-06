@@ -1,6 +1,6 @@
 const { Expense } = require('../models');
 
-const createExpense = async (req, res) => {
+  const createExpense = async (req, res) => {
   const currentDate = new Date();
   const entryDate = new Date(req.body.date);
 
@@ -32,4 +32,56 @@ const getExpenses = async (req, res) => {
   }
 };
 
-module.exports = { createExpense, getExpenses };
+const updateExpense = async (req, res) => {
+  try {
+      const { id } = req.params; // Get the ID from the request URL
+      const { title, description, amount, date } = req.body; // Get updated fields from the request body
+
+      const expense = await Expense.findByPk(id); // Find the expense by ID
+      if (!expense) {
+          return res.status(404).json({ error: 'Expense not found' });
+      }
+
+      // Update the expense with new values
+      expense.title = title;
+      expense.description = description;
+      expense.amount = amount;
+      expense.date = date;
+
+      await expense.save(); // Save changes to the database
+      res.json(expense); // Return the updated expense
+  } catch (error) {
+      console.error("Error updating expense:", error);
+      res.status(500).json({ error: 'Failed to update expense' });
+  }
+};
+
+const deleteExpense = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const expense = await Expense.findByPk(id);
+    if (!expense) {
+      return res.status(404).json({ error: 'Expense not found' });
+    }
+
+    await expense.destroy();
+    res.json({ message: 'Expense deleted successfully' });
+  } catch (error) {
+    console.error("Error deleting expense:", error);
+    res.status(500).json({ error: 'Failed to delete expense' });
+  }
+};
+
+const getTotalExpenses = async (req, res) => {
+  try {
+    // Use Sequelize's sum function to calculate the total of the 'amount' column
+    const totalExpenses = await Expense.sum('amount');// Summing up the 'amount' column from the database
+    res.status(200).json({ totalExpenses });// Sending the result back as a response
+  } catch (error) {
+    console.error("Error calculating total expenses:", error);
+    res.status(500).json({ error: 'Failed to calculate total expenses' });
+  }
+};
+
+module.exports = { createExpense, getExpenses, updateExpense, deleteExpense, getTotalExpenses };

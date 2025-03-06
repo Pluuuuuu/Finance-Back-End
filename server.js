@@ -7,6 +7,7 @@ const expenseRoutes = require('./routes/expenseRoutes'); // Import routes
 const categoryRoutes = require('./routes/categoryRoutes'); // Import category routes
 const timeout = require('connect-timeout');
 
+
 dotenv.config();
 
 const app = express();
@@ -25,6 +26,7 @@ app.use(timeout('60s')); // Set timeout to 60 seconds
 app.use('/api/expenses', expenseRoutes);
 app.use('/api/categories', categoryRoutes);
 
+
 // Example API Endpoints for the home page
 app.get('/api/summary', (req, res) => {
   const summary = {
@@ -34,6 +36,19 @@ app.get('/api/summary', (req, res) => {
   };
   res.status(200).json(summary);
 });
+
+//Add an API Endpoint to Fetch Total Expenses
+app.get('/api/total-expenses', async (req, res) => {
+  try {
+    const [result] = await sequelize.query('SELECT SUM(amount) as totalExpenses FROM Expenses');
+    const totalExpenses = result[0].totalExpenses || 0;
+    res.status(200).json({ totalExpenses });
+  } catch (error) {
+    console.error('Error fetching total expenses:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 
 app.get('/api/recent-activities', (req, res) => {
   const recentActivities = [

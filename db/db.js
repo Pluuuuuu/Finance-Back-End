@@ -1,64 +1,38 @@
-const sqlite3 = require('sqlite3').verbose();
-const fs = require('fs');
+/*const { Sequelize } = require('sequelize');
+const path = require('path');
 
-const DB_FILE = 'financev2.sqlite';
-const SCHEMA_FILE = 'schema.sql';
-
-// Connect to the database (creates file if it doesn't exist)
-const db = new sqlite3.Database(DB_FILE, (err) => {
-    if (err) {
-        console.error('Error opening database:', err.message);
-    } else {
-        console.log('Connected to SQLite database.');
-        initializeDatabase();
-    }
+const sequelize = new Sequelize({
+  dialect: 'sqlite',
+  storage: path.join(__dirname, 'financev2.db') // Path to your SQLite database file
 });
 
-// Run schema.sql if the database is empty
-function initializeDatabase() {
-    db.get("SELECT name FROM sqlite_master WHERE type='table' LIMIT 1;", (err, row) => {
-        if (!row) {
-            console.log('No tables found, initializing database...');
-            const schema = fs.readFileSync(SCHEMA_FILE, 'utf8');
-            db.exec(schema, (err) => {
-                if (err) {
-                    console.error('Error initializing database:', err.message);
-                } else {
-                    console.log('Database initialized successfully.');
-                }
-            });
-        } else {
-            console.log('Database already initialized.');
-        }
-    });
-}
+// Test the connection and handle errors
+sequelize.authenticate()
+  .then(() => {
+    console.log('Connection has been established successfully.');
+  })
+  .catch(err => {
+    console.error('Unable to connect to the database:', err);
+  });
 
-// Function to update the schema dynamically
-function updateSchema(sql) {
-    db.exec(sql, (err) => {
-        if (err) {
-            console.error('Error updating schema:', err.message);
-        } else {
-            console.log('Schema updated successfully.');
-        }
-    });
-}
+module.exports = sequelize;*/
 
-// Example: Adding a new column dynamically
-const addNewColumn = `
-    ALTER TABLE reports ADD COLUMN generated_at DATETIME DEFAULT CURRENT_TIMESTAMP;
-`;
-// updateSchema(addNewColumn);  // Uncomment to apply new changes dynamically
+const { Sequelize } = require('sequelize');
+const path = require('path');
+require('dotenv').config(); // Load environment variables from .env file
 
-// Close the database connection when done
-process.on('exit', () => {
-    db.close((err) => {
-        if (err) {
-            console.error('Error closing database:', err.message);
-        } else {
-            console.log('Database connection closed.');
-        }
-    });
+const sequelize = new Sequelize({
+  dialect: 'sqlite',
+  storage: process.env.DATABASE_PATH // Use the DATABASE_PATH from the .env file
 });
 
-module.exports = db;
+// Test the connection and handle errors
+sequelize.authenticate()
+  .then(() => {
+    console.log('Connection has been established successfully.');
+  })
+  .catch(err => {
+    console.error('Unable to connect to the database:', err);
+  });
+
+module.exports = sequelize;
