@@ -7,6 +7,7 @@ const expenseRoutes = require('./routes/expenseRoutes'); // Import routes
 const categoryRoutes = require('./routes/categoryRoutes'); // Import category routes
 const timeout = require('connect-timeout');
 
+
 dotenv.config();
 
 const app = express();
@@ -24,6 +25,7 @@ app.use(timeout('60s')); // Set timeout to 60 seconds
 
 app.use('/api/expenses', expenseRoutes);
 app.use('/api/categories', categoryRoutes);
+
 
 // Example API Endpoints for the home page
 app.get('/api/summary', (req, res) => {
