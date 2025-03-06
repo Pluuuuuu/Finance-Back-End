@@ -49,7 +49,6 @@ app.get('/api/total-expenses', async (req, res) => {
   }
 });
 
-
 app.get('/api/recent-activities', (req, res) => {
   const recentActivities = [
     { id: 1, title: "Salary", amount: 3000, date: "2025-02-01" },
@@ -108,8 +107,6 @@ app.get('/api/expenses', async (req, res) => {
   }
 });
 
-
-
 // Fetch financial summary
 app.get('/api/summary', async (req, res) => {
   // Fetch financial summary for the logged-in user
@@ -135,6 +132,32 @@ app.get('/api/categories', (req, res) => {
     // Add more categories as needed
   ];
   res.status(200).json(categories);
+});
+
+// PUT route for updating an expense
+app.put('/api/expenses/:id', async (req, res) => {
+  const { id } = req.params; // Get the ID from the route parameter
+  const { title, description, amount, date } = req.body; // Extract updated data from request body
+
+  try {
+      // Find the expense by ID and update it
+      const expense = await Expense.findByPk(id); // Sequelize example
+      if (!expense) {
+          return res.status(404).json({ error: 'Expense not found' });
+      }
+
+      await expense.update({
+          title,
+          description,
+          amount,
+          date,
+      });
+
+      res.status(200).json({ message: 'Expense updated successfully', expense });
+  } catch (error) {
+      console.error('Error updating expense:', error);
+      res.status(500).json({ error: 'Failed to update expense' });
+  }
 });
 
 // Sync database and start the server
