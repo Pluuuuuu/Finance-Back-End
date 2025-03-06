@@ -142,3 +142,7 @@ module.exports = {
     storage: process.env.DB_STORAGE,
   },
 };
+
+const analysisRoutes = require('./routes/analysisRoutes');
+// Middleware and routes
+app.use('/api/analysis', analysisRoutes);

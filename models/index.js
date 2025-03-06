@@ -13,5 +13,6 @@ db.sequelize = sequelize;
 
 db.Category = require('./Category')(sequelize, Sequelize);
 db.Expense = require('./Expense')(sequelize, Sequelize);
+db.Expense = require('./income')(sequelize, Sequelize);
 
 module.exports = db;
