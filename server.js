@@ -169,3 +169,14 @@ sequelize.sync()
     });
   })
   .catch(error => console.log('Error syncing database:', error));
+
+  
+const incomeRoutes = require('./routes/incomeRoutes');
+app.use('/api/incomes', incomeRoutes);  // Use the income routes under '/api/incomes'
+require('dotenv').config();
+module.exports = {
+  development: {
+    dialect: process.env.DB_DIALECT,
+    storage: process.env.DB_STORAGE,
+  },
+};

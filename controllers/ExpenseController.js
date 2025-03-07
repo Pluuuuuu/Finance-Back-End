@@ -34,22 +34,27 @@ const getExpenses = async (req, res) => {
 
 const updateExpense = async (req, res) => {
   try {
-      const { id } = req.params; // Get the ID from the request URL
-      const { title, description, amount, date } = req.body; // Get updated fields from the request body
+      const { id } = req.params; // Get the expense ID from request params
+      const { title, description, amount, date } = req.body; // Extract updated fields
 
-      const expense = await Expense.findByPk(id); // Find the expense by ID
+      if (!title || !description || !amount || !date) {
+          return res.status(400).json({ error: 'All fields are required for updating expense' });
+      }
+
+      // Find the expense by ID
+      const expense = await Expense.findByPk(id);
       if (!expense) {
           return res.status(404).json({ error: 'Expense not found' });
       }
 
-      // Update the expense with new values
+      // Update the expense
       expense.title = title;
       expense.description = description;
       expense.amount = amount;
-      expense.date = date;
+      expense.date = new Date(date); // Ensure date format is valid
 
       await expense.save(); // Save changes to the database
-      res.json(expense); // Return the updated expense
+      res.status(200).json(expense); // Respond with the updated expense
   } catch (error) {
       console.error("Error updating expense:", error);
       res.status(500).json({ error: 'Failed to update expense' });
@@ -58,20 +63,21 @@ const updateExpense = async (req, res) => {
 
 const deleteExpense = async (req, res) => {
   try {
-    const { id } = req.params;
+      const { id } = req.params; // Get the expense ID from request params
 
-    const expense = await Expense.findByPk(id);
-    if (!expense) {
-      return res.status(404).json({ error: 'Expense not found' });
-    }
+      // Find the expense by ID
+      const expense = await Expense.findByPk(id);
+      if (!expense) {
+          return res.status(404).json({ error: 'Expense not found' });
+      }
 
-    await expense.destroy();
-    res.json({ message: 'Expense deleted successfully' });
+      // Delete the expense
+      await expense.destroy();
+      res.status(200).json({ message: 'Expense deleted successfully' });
   } catch (error) {
-    console.error("Error deleting expense:", error);
-    res.status(500).json({ error: 'Failed to delete expense' });
+      console.error("Error deleting expense:", error);
+      res.status(500).json({ error: 'Failed to delete expense' });
   }
-};
 
 const getTotalExpenses = async (req, res) => {
   try {
@@ -85,3 +91,4 @@ const getTotalExpenses = async (req, res) => {
 };
 
 module.exports = { createExpense, getExpenses, updateExpense, deleteExpense, getTotalExpenses };
+}
