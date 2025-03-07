@@ -33,33 +33,28 @@ const getExpenses = async (req, res) => {
 };
 
 const updateExpense = async (req, res) => {
-    try {
-        const { id } = req.params; // Get the expense ID from request params
-        const { title, description, amount, date } = req.body; // Extract updated fields
+  try {
+      const { id } = req.params;
+      const { title, message, amount, date } = req.body; // Corrected 'description' to 'message'
 
-        if (!title || !description || !amount || !date) {
-            return res.status(400).json({ error: 'All fields are required for updating expense' });
-        }
+      if (!title || !message || !amount || !date) {
+          return res.status(400).json({ error: 'All fields are required for updating expense' });
+      }
 
-        // Find the expense by ID
-        const expense = await Expense.findByPk(id);
-        if (!expense) {
-            return res.status(404).json({ error: 'Expense not found' });
-        }
+      const expense = await Expense.findByPk(id);
+      if (!expense) {
+          return res.status(404).json({ error: 'Expense not found' });
+      }
 
-        // Update the expense
-        expense.title = title;
-        expense.description = description;
-        expense.amount = amount;
-        expense.date = new Date(date); // Ensure date format is valid
+      await expense.update({ title, message, amount, date });
 
-        await expense.save(); // Save changes to the database
-        res.status(200).json(expense); // Respond with the updated expense
-    } catch (error) {
-        console.error("Error updating expense:", error);
-        res.status(500).json({ error: 'Failed to update expense' });
-    }
+      res.status(200).json(expense);
+  } catch (error) {
+      console.error("Error updating expense:", error);
+      res.status(500).json({ error: 'Failed to update expense' });
+  }
 };
+
 
 const deleteExpense = async (req, res) => {
     try {

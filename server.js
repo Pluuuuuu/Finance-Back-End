@@ -7,6 +7,12 @@ const expenseRoutes = require('./routes/expenseRoutes'); // Import routes
 const categoryRoutes = require('./routes/categoryRoutes'); // Import category routes
 const timeout = require('connect-timeout');
 
+//by Rawaa
+
+/*const adminRoutes = require("./routes/AdminRoutes");
+const superadminRoutes = require("./routes/SuperadminRoutes");
+const authRoutes = require("./routes/authRoutes");*/
+
 
 dotenv.config();
 
@@ -25,6 +31,9 @@ app.use(timeout('60s')); // Set timeout to 60 seconds
 
 app.use('/api/expenses', expenseRoutes);
 app.use('/api/categories', categoryRoutes);
+ // Routes by Rawaa
+ /*app.use("/api/admins", adminRoutes);
+ app.use("/api/superadmin", superadminRoutes);*/
 
 
 // Example API Endpoints for the home page
@@ -135,30 +144,35 @@ app.get('/api/categories', (req, res) => {
 });
 
 // PUT route for updating an expense
-app.put('/api/expenses/:id', async (req, res) => {
+/*app.put('/api/expenses/:id', async (req, res) => {
   const { id } = req.params; // Get the ID from the route parameter
-  const { title, description, amount, date } = req.body; // Extract updated data from request body
+  const { title, description, amount, date } = req.body; // Extract updated data from request body*/
 
-  try {
-      // Find the expense by ID and update it
-      const expense = await Expense.findByPk(id); // Sequelize example
-      if (!expense) {
-          return res.status(404).json({ error: 'Expense not found' });
-      }
+  app.put("/api/expenses/:id", async (req, res) => {  
+    try {
+        const { title, message, amount, date } = req.body; // Use 'description' if that's the correct field
+        const id = req.params.id;
 
-      await expense.update({
-          title,
-          description,
-          amount,
-          date,
-      });
+        // Fetch the expense by ID
+        const expense = await Expense.findByPk(id);  
+        if (!expense) {
+            return res.status(404).json({ error: "Expense not found" });
+        }
 
-      res.status(200).json({ message: 'Expense updated successfully', expense });
-  } catch (error) {
-      console.error('Error updating expense:', error);
-      res.status(500).json({ error: 'Failed to update expense' });
-  }
+        // Update the expense fields
+        await expense.update({ title, message, amount, date });
+
+        // Send back the updated expense data with a success message
+        res.status(200).json({
+            message: 'Expense updated successfully',
+            expense: expense // Returning updated expense data
+        });
+    } catch (error) {
+        console.error("Error updating expense:", error);
+        res.status(500).json({ error: "Failed to update expense" });
+    }
 });
+
 
 // Sync database and start the server
 sequelize.sync()
