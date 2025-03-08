@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { createIncome, getIncomes } = require('../controllers/IncomeController');
+const { createIncome, getIncomes , updateIncome, deleteIncome, getTotalIncomes} = require('../controllers/IncomeController');
 
 // Route for adding a new income
 router.post('/', createIncome);
@@ -10,13 +10,13 @@ router.get('/', getIncomes);
 
 
 // Route for updating 
-router.put('/:id', updateIncomes);
+router.put('/:id', updateIncome);
 
 // Route for fetching the total expenses
 router.get('/total-incomes', getTotalIncomes); 
 
 // Route for deleting
-router.delete('/:id', deleteIncomes);
+router.delete('/:id', deleteIncome);
 module.exports = router;
 
 

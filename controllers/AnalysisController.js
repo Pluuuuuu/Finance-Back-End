@@ -1,4 +1,4 @@
-const { Income, Expense } = require('../models');
+/*const { Income, Expense } = require('../models');
 const { Op, Sequelize } = require('sequelize');
 
 const getAnalysisData = async (req, res) => {
@@ -57,3 +57,5 @@ const getAnalysisData = async (req, res) => {
 
 module.exports = { getAnalysisData };
 b
+
+*/

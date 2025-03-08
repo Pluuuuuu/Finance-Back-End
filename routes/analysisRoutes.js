@@ -1,4 +1,4 @@
-const express = require('express');
+/*const express = require('express');
 const router = express.Router();
 const AnalysisController = require('../controllers/AnalysisController');
 
@@ -6,3 +6,4 @@ const AnalysisController = require('../controllers/AnalysisController');
 router.get('api/analysis/:timeFrame', AnalysisController.getAnalysisData);
 
 module.exports = router;
+*/
