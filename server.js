@@ -27,7 +27,7 @@ app.use(timeout('60s')); // Set timeout to 60 seconds
 app.use('/api/expenses', expenseRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/incomes', incomeRoutes);
-app.use('/api/analysis', analysisRoutes);
+//app.use('/api/analysis', analysisRoutes);
 
 /*
 // Test Database Connection \\ add
