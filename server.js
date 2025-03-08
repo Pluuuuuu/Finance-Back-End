@@ -85,22 +85,24 @@ app.get('/test-db', async (req, res) => {
 });
 
 // API to add an expense
-app.post("/api/expenses", (req, res) => {
-  const { title, amount, category, date } = req.body;
+app.post("/api/expenses", async (req, res) => {
+  const { title, amount, category, date, message } = req.body;
 
   if (!title || !amount || !category || !date) {
-    return res.status(400).json({ error: "All fields are required" });
+      return res.status(400).json({ error: "All fields are required" });
   }
 
-  const sql = `INSERT INTO Expenses (title, amount, category, date) VALUES (?, ?, ?, ?)`;
-  sequelize.query(sql, { replacements: [title, amount, category, date] })
-    .then(([result, metadata]) => {
-      res.json({ id: result.lastID, title, amount, category, date }); // Adjusted to use lastID for SQLite
-    })
-    .catch(err => {
-      console.error("Error inserting expense:", err);
-      res.status(500).json({ error: err.message });
-    });
+  try {
+      const [result] = await sequelize.query(
+          "INSERT INTO Expenses (title, amount, category, date, message) VALUES (?, ?, ?, ?, ?)",
+          { replacements: [title, amount, category, date, message] }
+      );
+
+      res.status(201).json({ message: "Expense added successfully", expenseId: result.insertId });
+  } catch (error) {
+      console.error("Error adding expense:", error);
+      res.status(500).json({ error: error.message });
+  }
 });
 
 //API to get an expense
@@ -171,6 +173,25 @@ app.get('/api/categories', (req, res) => {
         console.error("Error updating expense:", error);
         res.status(500).json({ error: "Failed to update expense" });
     }
+});
+
+// Hard delete an expense
+app.delete("/api/expenses/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const [results] = await sequelize.query(
+      `DELETE FROM Expenses WHERE id = ?`,
+      { replacements: [id] }
+    );
+
+    console.log("Delete results:", results); // Debugging
+
+    res.status(200).json({ message: "Expense deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting expense:", error);
+    res.status(500).json({ error: error.message });
+  }
 });
 
 
