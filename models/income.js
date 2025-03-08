@@ -27,6 +27,7 @@ module.exports = (sequelize, Sequelize) => {
   }, {
     sequelize,
     modelName: 'Income',
+    //tableName: 'incomes',  // Explicitly set the table name to match Sequelize convention
   });
 
   return Income;

@@ -1,9 +1,12 @@
 const { Sequelize } = require('sequelize');
 const path = require('path');
+const dotenv = require('dotenv');
+
+dotenv.config();
 
 const sequelize = new Sequelize({
-  dialect: 'sqlite',
-  storage: path.join(__dirname, '../config/financev2.db') // Ensure this points to the correct location
+  dialect: process.env.DB_DIALECT || 'sqlite',
+  storage: process.env.DB_STORAGE || path.join(__dirname, '../config/financev2.db')
 });
 
 const db = {};
@@ -13,6 +16,6 @@ db.sequelize = sequelize;
 
 db.Category = require('./Category')(sequelize, Sequelize);
 db.Expense = require('./Expense')(sequelize, Sequelize);
-db.Expense = require('./income')(sequelize, Sequelize);
+db.Income = require('./Income')(sequelize, Sequelize); // Fixed issue
 
 module.exports = db;
