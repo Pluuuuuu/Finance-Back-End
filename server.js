@@ -133,12 +133,89 @@ sequelize.sync()
   .catch(error => console.log('Error syncing database:', error));
 
   
-const incomeRoutes = require('./routes/incomeRoutes');
-app.use('/api/incomes', incomeRoutes);  // Use the income routes under '/api/incomes'
-require('dotenv').config();
-module.exports = {
-  development: {
-    dialect: process.env.DB_DIALECT,
-    storage: process.env.DB_STORAGE,
-  },
-};
+//m
+app.use('/api/incomes', incomeRoutes);
+//Add an API Endpoint to Fetch Total Income
+app.get('/api/total-incomes', async (req, res) => {
+  try {
+    const [result] = await sequelize.query('SELECT SUM(amount) as totalIncomes FROM Incomes');
+    const totalIncomes = result[0].totalIncomes || 0;
+    res.status(200).json({ totalIncomes });
+  } catch (error) {
+    console.error('Error fetching total Incomes:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+//might remove
+app.get('/api/recent-activities', (req, res) => {
+  const recentActivities = [
+    { id: 1, title: "Bonus", amount: 3000, date: "2025-02-05" },
+    { id: 2, title: "June Salary", amount: 150, date: "2025-06-05" }
+  ];
+  res.status(200).json(recentActivities);
+});
+//might remove
+app.get('/api/chart-data', (req, res) => {
+  const chartData = {
+    labels: ["January", "February", "March"],
+    data: [3000, 2500, 5000] // Example data
+  };
+  res.status(200).json(chartData);
+});
+// API to add an income
+app.post("/api/incomes", (req, res) => {
+  const { title, amount, category, date } = req.body;
+
+  if (!title || !amount || !category || !date) {
+    return res.status(400).json({ error: "All fields are required" });
+  }
+  const sql = `INSERT INTO Incomes (title, amount, category, date) VALUES (?, ?, ?, ?)`;
+  sequelize.query(sql, { replacements: [title, amount, category, date] })
+    .then(([result, metadata]) => {
+      res.json({ id: result.lastID, title, amount, category, date }); // Adjusted to use lastID for SQLite
+    })
+    .catch(err => {
+      console.error("Error inserting income:", err);
+      res.status(500).json({ error: err.message });
+    });
+});
+
+//API to get an incomee
+app.get('/api/incomes', async (req, res) => {
+  try {
+    const incomes = await sequelize.query('SELECT * FROM Incomes', {
+      type: sequelize.QueryTypes.SELECT
+    });
+    res.status(200).json(incomes);
+  } catch (err) {
+    console.error('Error fetching incomes:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+//UPDATE
+
+app.put("/api/incomes/:id", async (req, res) => {  
+  try {
+      const { title, message, amount, date } = req.body; // Use 'description' if that's the correct field
+      const id = req.params.id;
+
+      // Fetch the income by ID
+      const income = await Income.findByPk(id);  
+      if (!income) {
+          return res.status(404).json({ error: "Income not found" });
+      }
+
+      // Update the income fields
+      await income.update({ title, message, amount, date });
+
+      // Send back the updated income data with a success message
+      res.status(200).json({
+          message: 'Income updated successfully',
+          income: income // Returning updated income data
+      });
+  } catch (error) {
+      console.error("Error updating income:", error);
+      res.status(500).json({ error: "Failed to update income" });
+  }
+});
