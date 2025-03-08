@@ -47,6 +47,7 @@ const updateExpense = async (req, res) => {
       }
 
       await expense.update({ title, message, amount, date });
+      
 
       res.status(200).json(expense);
   } catch (error) {

@@ -1,4 +1,5 @@
 const { Model, DataTypes } = require('sequelize');
+//const sequelize = require("../db/db");
 
 module.exports = (sequelize, Sequelize) => {
   class Expense extends Model {}
