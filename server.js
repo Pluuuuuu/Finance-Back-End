@@ -7,6 +7,13 @@ const expenseRoutes = require('./routes/expenseRoutes'); // Import routes
 const categoryRoutes = require('./routes/categoryRoutes'); // Import category routes
 const timeout = require('connect-timeout');
 
+//by Rawaa
+
+/*const adminRoutes = require("./routes/AdminRoutes");
+const superadminRoutes = require("./routes/SuperadminRoutes");
+const authRoutes = require("./routes/authRoutes");*/
+
+
 dotenv.config();
 
 const app = express();
@@ -24,6 +31,10 @@ app.use(timeout('60s')); // Set timeout to 60 seconds
 
 app.use('/api/expenses', expenseRoutes);
 app.use('/api/categories', categoryRoutes);
+ // Routes by Rawaa
+ /*app.use("/api/admins", adminRoutes);
+ app.use("/api/superadmin", superadminRoutes);*/
+
 
 // Example API Endpoints for the home page
 app.get('/api/summary', (req, res) => {
@@ -33,6 +44,18 @@ app.get('/api/summary', (req, res) => {
     netProfit: 5000 // Example data
   };
   res.status(200).json(summary);
+});
+
+//Add an API Endpoint to Fetch Total Expenses
+app.get('/api/total-expenses', async (req, res) => {
+  try {
+    const [result] = await sequelize.query('SELECT SUM(amount) as totalExpenses FROM Expenses');
+    const totalExpenses = result[0].totalExpenses || 0;
+    res.status(200).json({ totalExpenses });
+  } catch (error) {
+    console.error('Error fetching total expenses:', error);
+    res.status(500).json({ error: error.message });
+  }
 });
 
 app.get('/api/recent-activities', (req, res) => {
@@ -62,22 +85,24 @@ app.get('/test-db', async (req, res) => {
 });
 
 // API to add an expense
-app.post("/api/expenses", (req, res) => {
-  const { title, amount, category, date } = req.body;
+app.post("/api/expenses", async (req, res) => {
+  const { title, amount, category, date, message } = req.body;
 
   if (!title || !amount || !category || !date) {
-    return res.status(400).json({ error: "All fields are required" });
+      return res.status(400).json({ error: "All fields are required" });
   }
 
-  const sql = `INSERT INTO Expenses (title, amount, category, date) VALUES (?, ?, ?, ?)`;
-  sequelize.query(sql, { replacements: [title, amount, category, date] })
-    .then(([result, metadata]) => {
-      res.json({ id: result.lastID, title, amount, category, date }); // Adjusted to use lastID for SQLite
-    })
-    .catch(err => {
-      console.error("Error inserting expense:", err);
-      res.status(500).json({ error: err.message });
-    });
+  try {
+      const [result] = await sequelize.query(
+          "INSERT INTO Expenses (title, amount, category, date, message) VALUES (?, ?, ?, ?, ?)",
+          { replacements: [title, amount, category, date, message] }
+      );
+
+      res.status(201).json({ message: "Expense added successfully", expenseId: result.insertId });
+  } catch (error) {
+      console.error("Error adding expense:", error);
+      res.status(500).json({ error: error.message });
+  }
 });
 
 //API to get an expense
@@ -92,8 +117,6 @@ app.get('/api/expenses', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
-
-
 
 // Fetch financial summary
 app.get('/api/summary', async (req, res) => {
@@ -121,6 +144,56 @@ app.get('/api/categories', (req, res) => {
   ];
   res.status(200).json(categories);
 });
+
+// PUT route for updating an expense
+/*app.put('/api/expenses/:id', async (req, res) => {
+  const { id } = req.params; // Get the ID from the route parameter
+  const { title, description, amount, date } = req.body; // Extract updated data from request body*/
+
+  app.put("/api/expenses/:id", async (req, res) => {  
+    try {
+        const { title, message, amount, date } = req.body; // Use 'description' if that's the correct field
+        const id = req.params.id;
+
+        // Fetch the expense by ID
+        const expense = await Expense.findByPk(id);  
+        if (!expense) {
+            return res.status(404).json({ error: "Expense not found" });
+        }
+
+        // Update the expense fields
+        await expense.update({ title, message, amount, date });
+
+        // Send back the updated expense data with a success message
+        res.status(200).json({
+            message: 'Expense updated successfully',
+            expense: expense // Returning updated expense data
+        });
+    } catch (error) {
+        console.error("Error updating expense:", error);
+        res.status(500).json({ error: "Failed to update expense" });
+    }
+});
+
+// Hard delete an expense
+app.delete("/api/expenses/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const [results] = await sequelize.query(
+      `DELETE FROM Expenses WHERE id = ?`,
+      { replacements: [id] }
+    );
+
+    console.log("Delete results:", results); // Debugging
+
+    res.status(200).json({ message: "Expense deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting expense:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 
 // Sync database and start the server
 sequelize.sync()
