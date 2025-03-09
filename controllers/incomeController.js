@@ -1,7 +1,8 @@
 const { Income } = require('../models');  // Assuming your Income model is defined
-
+const express = require('express');
+const router = express.Router(); // Initialize router
 // Create a new income
-const createIncome = async (req, res) => {
+  const createIncome = async (req, res) => {
   const currentDate = new Date();
   const entryDate = new Date(req.body.date);
 
@@ -45,4 +46,27 @@ const getIncomes = async (req, res) => {
     }
   };
 
+
+// Create Income Route(by michella)
+router.post("/api/incomes", async (req, res) => {
+  try {
+      const { date, category, amount, title, message } = req.body;
+
+      // Validation for required fields
+      if (!date || !category || !amount || !title) {
+          return res.status(400).json({ error: "All fields except message are required." });
+      }
+
+      // Create new income record
+      const newIncome = await Income.create({ date, category, amount, title, message });
+
+      // Send response with the new income
+      res.status(201).json(newIncome);
+  } catch (error) {
+      console.error("Error adding income:", error);
+      res.status(500).json({ error: "Server error. Please try again later." });
+  }
+});
+
 module.exports = { createIncome, getIncomes };
+

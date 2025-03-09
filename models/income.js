@@ -1,5 +1,4 @@
 const { Model, DataTypes } = require('sequelize');
-
 module.exports = (sequelize, Sequelize) => {
   class Income extends Model {}
 

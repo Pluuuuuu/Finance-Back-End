@@ -35,4 +35,7 @@ sequelize.authenticate()
     console.error('Unable to connect to the database:', err);
   });
 
+  //// Import the model here and associate it with Sequelize(by michella)
+const Income = require('./models/income')(sequelize, Sequelize);
+
 module.exports = sequelize;
