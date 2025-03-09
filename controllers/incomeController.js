@@ -1,7 +1,8 @@
 const { Income } = require('../models');  // Assuming your Income model is defined
-
+const express = require('express');
+const router = express.Router(); // Initialize router
 // Create a new income
-const createIncome = async (req, res) => {
+  const createIncome = async (req, res) => {
   const currentDate = new Date();
   const entryDate = new Date(req.body.date);
 
